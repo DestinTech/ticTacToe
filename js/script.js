@@ -8,7 +8,7 @@ const playerCounter = (() => {
     };
     return {getNewID};
 })();
-
+/*
 class Player{    
     //creates players and sets ID's and markers
     constructor(name){
@@ -28,6 +28,23 @@ class Player{
     
     }
 }
+*/
+
+const playerFactory = (name) => {
+    let playerID = playerCounter.getNewID();
+    let setMarker = () => {
+        if (playerID == 0){
+            return "X";
+        } 
+        else if (playerID == 1){
+            return "O";
+        }
+    };
+    let marker = setMarker();
+
+    return {name, playerID, marker};
+}
+
 
 const gameBoard = (() => {
 // This is a module, it will automatically run when the script is loaded,
@@ -37,19 +54,15 @@ const gameBoard = (() => {
 })();
 
 const displayController =(() => {
+    // Keep all the logic related to the enviroment here
     let players = [];
-// Keep all the logic related to the enviroment here
 
     for (i = 1; i<3; i++){ //gets the name for 2 players, adds to array.
-        players.push(new Player(window.prompt("What is your name?", `player ${i}`)));    
-    }   
+        players.push(playerFactory(window.prompt("What is your name?", `player ${i}`)));    
+    };
 // now that we have the players made
     console.log(players);
 
-/*    let paul = new Player("paul");
-    let pul = new Player("pul");
+    
 
-    console.log(paul);
-    console.log(pul);
-    */
 })();
