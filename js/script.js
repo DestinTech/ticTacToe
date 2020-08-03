@@ -1,34 +1,12 @@
 const playerCounter = (() => {
+    /* Putting the count here inside the module ensures it's created,
+            and gives access to the functions inside of it. */
     let count = 0;
-        /* Putting the count here inside the module ensures it's created,
-            and gives access to the functions inside of it. 
-    */
     const getNewID = () =>{
         return count++; //return the count, and increment it
     };
     return {getNewID};
 })();
-/*
-class Player{    
-    //creates players and sets ID's and markers
-    constructor(name){
-
-        this.playerID = playerCounter.getNewID();   //gets a unique player ID        
-        this.name = name;
-        this.marker = this.getMarker(); 
-        }
-
-    getMarker = () => {
-            if (this.playerID == 0){
-                return "X";
-            } 
-            else if (this.playerID == 1){
-                return "O";
-            }
-    
-    }
-}
-*/
 
 const playerFactory = (name) => {
     let playerID = playerCounter.getNewID();
@@ -49,7 +27,36 @@ const playerFactory = (name) => {
 const gameBoard = (() => {
 // This is a module, it will automatically run when the script is loaded,
 // creating and executing what is inside of it. any expored functions can be accessed outside of the scope.
-    let board = {};
+    let board = [];
+    const container = document.querySelector("#root");
+    for (i=0; i<9; i++){
+        board.push("");
+        console.log("Square created");
+    }
+        //render the gameboard to the sreen
+    render = (() => {
+        let counter = 0;
+        for (let squares of board){
+            const boardDiv = document.createElement("div");
+            boardDiv.className = "gridSquare";
+
+            const boardText = document.createElement("p");
+            boardText.textContent = "X";
+            boardText.dataset.id= counter;
+            boardText.className = "boardText";
+            boardDiv.dataset.id = counter;
+
+            counter++;
+            
+            boardDiv.appendChild(boardText);
+
+            container.appendChild(boardDiv);
+        }
+    })();
+    clear = () =>{
+
+
+    };
 
 })();
 
@@ -63,6 +70,7 @@ const displayController =(() => {
 // now that we have the players made
     console.log(players);
 
-    
 
 })();
+
+
