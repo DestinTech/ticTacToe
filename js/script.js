@@ -1,39 +1,56 @@
-const playerCounter = (() => {
-    /* Putting the count here inside the module ensures it's created,
-            and gives access to the functions inside of it. */
-    let count = 0;
-    const getNewID = () =>{
-        return count++; //return the count, and increment it
-    };
-    return {getNewID};
+const playerModel = (() => {//Here we should store the players, their ID's, and the methods to change that data.
+//we need a player ID, name, and piece
+    let players = [];    
+    let playerCount = 0;
+    const getNewID = () => {return playerCount++};  //return the count, and increment it
+    const playerFactory = (name) => {
+        let ID = getNewID();
+        let getMarker  = () => {
+            if (ID == 0){ return "X"}
+            else if (ID == 1){ return "O"}
+        };
+        let marker = getMarker();
+
+        return {name, ID, marker};
+    }
+
+    const createPlayer = (name) => { 
+        newPlayer = playerFactory(name);
+        players.push(newPlayer);
+    }
+
+    const clearPlayers = () => {
+        players = [];
+    }
+    return {createPlayer, players, clearPlayers}
+})();
+const playerController = (() =>{
+    const newGame = () => {
+        playerModel.clearPlayers();
+        for (let i=0; i <= 2; i++){ //initialize new players
+            createPlayer(window.prompt("What is your name?"));
+            i++;
+        }
+    }
+    const createPlayer = (name) => {
+        playerModel.createPlayer(name);
+    }
+    const players = () => playerModel.players;
+
+    /*
+    Here we have methods to update the player model. 
+    The controller interacts with this, not the model.
+    */
+   return {createPlayer, players, newGame}
 })();
 
-const playerFactory = (name) => {
-    let playerID = playerCounter.getNewID();
-    let setMarker = () => {
-        if (playerID == 0){
-            return "X";
-        } 
-        else if (playerID == 1){
-            return "O";
-        }
-    };
-    let marker = setMarker();
 
-    return {name, playerID, marker};
-}
-
-
-const gameBoard = (() => {
+const gameBoardModel = (() => {
 // This is a module, it will automatically run when the script is loaded,
 // creating and executing what is inside of it. any expored functions can be accessed outside of the scope.
     let board = []; // Create an object to store the moves on the board
-    const container = document.querySelector("#root"); // grab the div element we want to add the board to
-    //for (i=0; i<9; i++){ // Write 9 blank variables to be filled as board elements
-    //    board.push(""); 
-    //    console.log("Square created");
-    //}
-    //render the gameboard to the sreen
+    const container = document.querySelector("#root"); // grab the div element we want to add the board to render
+
     const render = () => {
         let counter = 0;
         clear();
@@ -64,46 +81,44 @@ const gameBoard = (() => {
     const clear = () => {
         container.innerHTML = "";
     }
-    const playPiece = (gridNumber, marker) => {
+    const play = (gridNumber, ID) => {
+        if (ID == 0){ marker = "O"}
+        if (ID == 1) {marker = "X"}
         if (board[gridNumber] === undefined){
             board[gridNumber] = marker;
             render();
         }
     }
 
-    const getBoard = () => {
-        console.log(board);
-    }
+
     
 
-    return {clear, newGame, render, playPiece, getBoard}
-
+    return {clear, newGame, render, play}
   
 })();
-
-const displayController =(() => {
-    // Keep all the logic related to the enviroment here
-    let players = [];
-
-    for (i = 1; i<3; i++){ //gets the name for 2 players, adds to array.
-        players.push(playerFactory(window.prompt("What is your name?", `player ${i}`)));    
-    };
-    gameBoard.newGame();
-
-    
-    let h = 0;
-    for (v=0; v<= 9; v++){
-        let marker = players[h].marker;
-        let spot = window.prompt("What spot should we put the marker? 0-8");
-        gameBoard.playPiece(spot, marker);
-        if (h == 0 ) h = 1;
-        else if (h == 1) h = 0;
-        console.log(h);
+const gameBoardController = (() => {
+    let playerTurn = 0;
+    //Here we have an interface to interact beween the gameBoardModel an the displayController
+    let newGame = () => {
+        gameBoardModel.newGame(); // clear the prev. game
+        playerController.newGame();
+        gameMain();
     }
-// now that we have the players made
-    console.log(players);
-
-
+    let play = (qu) => {
+        gameBoardModel.play(qu, playerTurn);
+        playerTurn = !playerTurn; 
+    }
+    let gameMain = () => {
+        let win = false;
+     //while no 3 are win
+        while (win == false){
+            play(window.prompt("What spot should we put the marker? 0-8"));
+        }   
+    }
+    return {newGame, play}
 })();
 
 
+const displayController =(() => {
+    gameBoardController.newGame();
+})();
